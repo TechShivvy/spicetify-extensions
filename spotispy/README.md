@@ -47,6 +47,10 @@ spicetify apply
 
 You might think this extension is a bit meh, and honestly, I'm on the same page! But here's the thing: I kinda enjoy checking out what tunes my friends are vibing to. I used to manually add their jam to my Queue, but I thought, "Why not automate it for a smoother experience?". So, I went ahead and did just that. Now, why do I get a kick out of peeping their music choices? It's not about being nosy, really. It's more like a rad way to discover tons of new music and genres. Plus, this project was my first-ever Spicetify gig, and I was super stoked to share it with everyone!
 
+## Credits
+
+- [Grigory](https://github.com/SunsetTechuila) for the coding assistance!
+
 ## More
 
 🌟 Like it? Gimme some love!
