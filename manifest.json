@@ -6,7 +6,8 @@
     "readme": "spotispy/README.md",
     "preview": "spotispy/preview.gif",
     "authors": [
-      { "name": "TechShivvy", "url": "https://github.com/TechShivvy" }
+      { "name": "TechShivvy", "url": "https://github.com/TechShivvy" },
+      { "name": "SunsetTechuila", "url": "https://github.com/SunsetTechuila" }
     ],
     "tags": ["track", "spy", "record"]
   }
