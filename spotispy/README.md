@@ -26,7 +26,7 @@ Example:
 ```ini
 [AdditionalOptions]
 ...
-extensions = autoSkipExplicit.js|shuffle+.js|trashbin.js|FeatureShuffle.js
+extensions = autoSkipVideo.js|bookmark.js|fullAppDisplay.js|spotispy.js
 ```
 
 Then run:
