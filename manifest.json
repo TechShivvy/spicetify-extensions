@@ -1,0 +1,13 @@
+[
+  {
+    "name": "Spotispy",
+    "description": "Keep tabs on your pals. Whatever they listen to, anybody you decide to stalk, will be put to your queue.",
+    "main": "spotispy/spotispy.js",
+    "readme": "spotispy/README.md",
+    "preview": "spotispy/preview.gif",
+    "authors": [
+      { "name": "TechShivvy", "url": "https://github.com/TechShivvy" }
+    ],
+    "tags": ["track", "spy", "record"]
+  }
+]
