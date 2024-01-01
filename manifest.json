@@ -9,6 +9,18 @@
       { "name": "TechShivvy", "url": "https://github.com/TechShivvy" },
       { "name": "SunsetTechuila", "url": "https://github.com/SunsetTechuila" }
     ],
+    "tags": ["stalk", "spy", "friends"]
+  },
+  {
+    "name": "Play a Random Song",
+    "description": "Click and let the app play a random track for you.",
+    "main": "spotispy/spotispy.js",
+    "readme": "spotispy/README.md",
+    "preview": "spotispy/preview.gif",
+    "authors": [
+      { "name": "TechShivvy", "url": "https://github.com/TechShivvy" },
+      { "name": "SunsetTechuila", "url": "https://github.com/SunsetTechuila" }
+    ],
     "tags": ["stalk", "spy"]
   }
 ]
