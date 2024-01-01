@@ -16,7 +16,7 @@
     "description": "Click and let the app play a random track for you.",
     "main": "play-random/playRandom.mjs",
     "readme": "play-random/README.md",
-    "preview": "play-random/playRandom.gif",
+    "preview": "play-random/playRandom.jpg",
     "authors": [
       { "name": "TechShivvy", "url": "https://github.com/TechShivvy" }
     ],
