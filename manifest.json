@@ -14,13 +14,12 @@
   {
     "name": "Play a Random Song",
     "description": "Click and let the app play a random track for you.",
-    "main": "spotispy/spotispy.js",
-    "readme": "spotispy/README.md",
-    "preview": "spotispy/preview.gif",
+    "main": "play-random/playRandom.mjs",
+    "readme": "play-random/README.md",
+    "preview": "play-random/preview.gif",
     "authors": [
-      { "name": "TechShivvy", "url": "https://github.com/TechShivvy" },
-      { "name": "SunsetTechuila", "url": "https://github.com/SunsetTechuila" }
+      { "name": "TechShivvy", "url": "https://github.com/TechShivvy" }
     ],
-    "tags": ["stalk", "spy"]
+    "tags": ["random", "song"]
   }
 ]
