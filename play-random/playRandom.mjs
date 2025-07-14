@@ -297,7 +297,7 @@ import random from "https://esm.sh/lodash.random";
     };
 
     async function main() {
-      await PlayRandom.addButton();
+      PlayRandom.addButton();
     }
 
     var app_default = main;
