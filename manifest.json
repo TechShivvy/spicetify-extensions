@@ -18,7 +18,8 @@
     "readme": "play-random/README.md",
     "preview": "play-random/playRandom.jpg",
     "authors": [
-      { "name": "TechShivvy", "url": "https://github.com/TechShivvy" }
+      { "name": "TechShivvy", "url": "https://github.com/TechShivvy" },
+      { "name": "Hitesh1090", "url": "https://github.com/Hitesh1090" }
     ],
     "tags": ["random", "song"]
   }
