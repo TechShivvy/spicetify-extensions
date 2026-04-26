@@ -409,11 +409,10 @@ import random from "https://esm.sh/lodash.random";
             queuedTrack = null;
             prefetchAndQueue(targetUserUri, playingUri);
           } else if (queuedTrack) {
-            // User skipped to something else — remove old queued track, queue a new one
+            // User skipped to something else, but our track is still in the queue - leave it
             console.log(
-              "[Play Random][AUTO] User skipped, re-queuing a new track",
+              "[Play Random][AUTO] User skipped, queued track still in queue",
             );
-            prefetchAndQueue(targetUserUri, currentUri);
           } else {
             // No track queued (prefetch failed or first load) — queue one now
             console.log(
