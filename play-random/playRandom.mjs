@@ -274,21 +274,28 @@ import random from "https://esm.sh/lodash.random";
       }
 
       static async addButton() {
+        const { LocalStorage } = Spicetify;
+
         while (
           !Spicetify.Topbar?.Button ||
           !Spicetify.PopupModal?.display ||
-          !Spicetify.CosmosAsync ||
-          !Spicetify.Playbar
+          !Spicetify.Playbar ||
+          !LocalStorage
         ) {
           await delay(100);
         }
 
-        let targetUserUri = "spotify:user:thesoundsofspotify";
-        let autoplayEnabled = false;
+        const DEFAULT_URI = "spotify:user:thesoundsofspotify";
+
+        // Load persisted settings
+        let targetUserUri =
+          LocalStorage.get("play-random:user-uri") || DEFAULT_URI;
+        let autoplayEnabled =
+          LocalStorage.get("play-random:autoplay") === "true";
         let lastTrackUri = null;
 
-        // Play Random button
-        new Spicetify.Topbar.Button(
+        // Single topbar button — right click opens settings
+        const button = new Spicetify.Topbar.Button(
           "Play a Random Song",
           icon("shuffle"),
           async () => {
@@ -296,31 +303,12 @@ import random from "https://esm.sh/lodash.random";
           },
           false,
         );
+        button.element.oncontextmenu = (e) => {
+          e.preventDefault();
+          openSettings();
+        };
 
-        // Toggle Autoplay button
-        new Spicetify.Topbar.Button(
-          "Toggle Autoplay",
-          icon("play"),
-          () => {
-            autoplayEnabled = !autoplayEnabled;
-            Spicetify.showNotification(
-              autoplayEnabled
-                ? "[Play Random] Autoplay: ON"
-                : "[Play Random] Autoplay: OFF",
-            );
-          },
-          false,
-        );
-
-        // Set Profile button
-        new Spicetify.Topbar.Button(
-          "Set Playlist Profile",
-          icon("edit"),
-          () => openPlaylistProfileModal(),
-          false,
-        );
-
-        // Track end detection
+        // Track end detection for autoplay
         setInterval(async () => {
           if (
             !autoplayEnabled ||
@@ -353,94 +341,186 @@ import random from "https://esm.sh/lodash.random";
         // Hotkeys with Alt
         document.addEventListener("keydown", async (e) => {
           if (e.altKey && e.key === "a") {
-            // Alt + A: Toggle autoplay
             autoplayEnabled = !autoplayEnabled;
+            LocalStorage.set("play-random:autoplay", String(autoplayEnabled));
             Spicetify.showNotification(
               `[Play Random] Autoplay turned ${autoplayEnabled ? "ON" : "OFF"}`,
             );
           }
 
           if (e.altKey && e.key === "r") {
-            // Alt + R: Play random now
             await _PlayRandom.doTheThing(targetUserUri);
           }
 
           if (e.altKey && e.key === "e") {
-            // Alt + E: Open playlist URI modal
-            openPlaylistProfileModal();
+            openSettings();
           }
         });
 
-        // Modal function for setting playlist profile URI
-        function openPlaylistProfileModal() {
-          const modalContent = document.createElement("div");
-          Object.assign(modalContent.style, {
-            display: "flex",
-            flexDirection: "column",
-            gap: "10px",
+        // Settings modal (right-click menu)
+        let configContainer = null;
+
+        function openSettings() {
+          configContainer = document.createElement("div");
+          configContainer.id = "play-random-config";
+
+          const style = document.createElement("style");
+          style.textContent = `
+#play-random-config .setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+}
+#play-random-config .setting-row .col.description {
+  cursor: default;
+  width: 50%;
+}
+#play-random-config .setting-row .col.action {
+  display: flex;
+  justify-content: flex-end;
+  width: 50%;
+}
+#play-random-config button.switch {
+  align-items: center;
+  border: 0;
+  border-radius: 50%;
+  background-color: rgba(var(--spice-rgb-shadow), .7);
+  color: var(--spice-text);
+  cursor: pointer;
+  display: flex;
+  padding: 8px;
+}
+#play-random-config button.switch.disabled {
+  color: rgba(var(--spice-rgb-text), .3);
+}
+#play-random-config input {
+  width: 100%;
+  padding: 0 8px;
+  height: 32px;
+  border: 0;
+  border-radius: 4px;
+  background: rgba(var(--spice-rgb-shadow), .7);
+  color: var(--spice-text);
+  font-size: 0.875rem;
+}
+#play-random-config button.btn {
+  font-weight: 700;
+  background-color: rgba(var(--spice-rgb-shadow), .7);
+  border-radius: 500px;
+  transition-duration: 33ms;
+  transition-property: background-color, border-color, color, box-shadow, filter, transform;
+  padding-inline: 15px;
+  border: 1px solid #727272;
+  color: var(--spice-text);
+  min-block-size: 32px;
+  cursor: pointer;
+}
+#play-random-config button.btn:hover {
+  transform: scale(1.04);
+  border-color: var(--spice-text);
+}
+`;
+
+          // --- Autoplay toggle ---
+          const autoplayRow = document.createElement("div");
+          autoplayRow.classList.add("setting-row");
+          autoplayRow.innerHTML = `
+<label class="col description">Autoplay (continuous random)</label>
+<div class="col action">
+  <button class="switch ${autoplayEnabled ? "" : "disabled"}">
+    <svg height="16" width="16" viewBox="0 0 16 16" fill="currentColor">${Spicetify.SVGIcons.check}</svg>
+  </button>
+</div>`;
+          const autoplaySwitch = autoplayRow.querySelector("button.switch");
+          autoplaySwitch.onclick = () => {
+            autoplayEnabled = !autoplayEnabled;
+            autoplaySwitch.classList.toggle("disabled", !autoplayEnabled);
+            LocalStorage.set("play-random:autoplay", String(autoplayEnabled));
+            Spicetify.showNotification(
+              `[Play Random] Autoplay turned ${autoplayEnabled ? "ON" : "OFF"}`,
+            );
+          };
+
+          // --- Profile URI section ---
+          const profileHeader = document.createElement("h3");
+          profileHeader.textContent = "Playlist Profile URI";
+          profileHeader.style.marginTop = "16px";
+
+          const uriInput = document.createElement("input");
+          uriInput.type = "text";
+          uriInput.placeholder = "spotify:user:<id>";
+          uriInput.value = targetUserUri;
+
+          const hintText = document.createElement("span");
+          hintText.textContent =
+            "Tip: You can also paste a Spotify profile share link!";
+          Object.assign(hintText.style, {
+            fontSize: "0.75rem",
+            opacity: "0.6",
+            marginTop: "4px",
           });
 
-          const input = document.createElement("input");
-          input.type = "text";
-          input.placeholder = "spotify:user:your_username";
-          input.value = targetUserUri;
-          Object.assign(input.style, {
-            padding: "0.375rem 0.75rem",
-            borderRadius: "0.25rem",
-            border: "1px solid #ced4da",
-            backgroundColor: "#fff",
-            color: "#212529",
-            width: "100%",
-            boxSizing: "border-box",
-            fontSize: "1rem",
-            transition:
-              "border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out",
+          const buttonRow = document.createElement("div");
+          Object.assign(buttonRow.style, {
+            display: "flex",
+            gap: "8px",
+            marginTop: "8px",
           });
-          input.onfocus = () => {
-            input.style.borderColor = "#80bdff";
-            input.style.outline = "0";
-            input.style.boxShadow = "0 0 0 0.2rem rgba(0,123,255,.25)";
-          };
-          input.onblur = () => {
-            input.style.borderColor = "#ced4da";
-            input.style.boxShadow = "none";
-          };
 
           const saveBtn = document.createElement("button");
+          saveBtn.className = "btn";
           saveBtn.textContent = "Save";
-          styleBtn(saveBtn, "#1DB954", "#1e9548ff");
           saveBtn.onclick = () => {
-            const val = input.value.trim();
-            if (/^spotify:user:[\w-]+$/.test(val)) {
+            let val = uriInput.value.trim();
+            // Parse Spotify profile link to URI
+            const linkMatch = val.match(
+              /^https?:\/\/open\.spotify\.com\/user\/([\w.-]+)/,
+            );
+            if (linkMatch) {
+              val = `spotify:user:${linkMatch[1]}`;
+            }
+            if (/^spotify:user:[\w.-]+$/.test(val)) {
               targetUserUri = val;
-              Spicetify.showNotification("[Play Random] User URI updated!");
+              uriInput.value = val;
+              LocalStorage.set("play-random:user-uri", val);
+              Spicetify.showNotification("[Play Random] User URI saved!");
               Spicetify.PopupModal.hide();
             } else {
               Spicetify.showNotification(
-                "[Play Random] Invalid URI. Format: spotify:user:<id>",
+                "[Play Random] Invalid input. Use spotify:user:<id> or a Spotify profile link.",
                 true,
               );
             }
           };
 
           const resetBtn = document.createElement("button");
+          resetBtn.className = "btn";
           resetBtn.textContent = "Reset to Default";
-          styleBtn(resetBtn, "#6c757d", "#5c636a");
           resetBtn.onclick = () => {
-            input.value = "spotify:user:thesoundsofspotify";
-            targetUserUri = "spotify:user:thesoundsofspotify";
+            uriInput.value = DEFAULT_URI;
+            targetUserUri = DEFAULT_URI;
+            LocalStorage.set("play-random:user-uri", DEFAULT_URI);
             Spicetify.showNotification(
               "[Play Random] Reset to default profile.",
             );
           };
 
-          modalContent.appendChild(input);
-          modalContent.appendChild(saveBtn);
-          modalContent.appendChild(resetBtn);
+          buttonRow.appendChild(saveBtn);
+          buttonRow.appendChild(resetBtn);
+
+          configContainer.append(
+            style,
+            autoplayRow,
+            profileHeader,
+            uriInput,
+            hintText,
+            buttonRow,
+          );
 
           Spicetify.PopupModal.display({
-            title: "Set Playlist Profile URI",
-            content: modalContent,
+            title: "Play Random — Settings",
+            content: configContainer,
           });
         }
       }
