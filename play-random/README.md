@@ -9,11 +9,12 @@ Hey there! Welcome to my second Spicetify gig – a seemingly pointless (again?)
 ## Install
 
 Copy `playRandom.mjs` into your [Spicetify](https://github.com/khanhas/spicetify-cli) extensions directory:
-| **Platform** | **Path** |
-|----------------|--------------------------------------------------------------------------------------|
-| **Linux** | `~/.config/spicetify/Extensions` or `$XDG_CONFIG_HOME/.config/spicetify/Extensions/` |
-| **MacOS** | `~/spicetify_data/Extensions` or `$SPICETIFY_CONFIG/Extensions` |
-| **Windows** | `%appdata%\spicetify\Extensions\` |
+
+| **Platform** | **Path**                                                                             |
+| ------------ | ------------------------------------------------------------------------------------ |
+| **Linux**    | `~/.config/spicetify/Extensions` or `$XDG_CONFIG_HOME/.config/spicetify/Extensions/` |
+| **MacOS**    | `~/spicetify_data/Extensions` or `$SPICETIFY_CONFIG/Extensions`                      |
+| **Windows**  | `%appdata%\spicetify\Extensions\`                                                    |
 
 After putting the extension file into the correct folder, run the following command to install the extension or install through marketplace:
 
@@ -41,15 +42,37 @@ spicetify apply
 
 ## Usage
 
-- Simply install the extension and click the shuffle button/icon located on the top bar(mostly top-left).
-- After a brief moment, the app will play a random track, adding an element of surprise to your music experience.
-- Note: It will clear your current context queue, but any songs queued manually by you will remain. If all manually queued songs are played, similar songs to the randomly played track will line up and play if you have the "Autoplay" setting enabled.
+- Click the **shuffle button** on the top bar to play a random track from the target user's public playlists.
+- **Right-click** the shuffle button to open the **Settings** modal where you can:
+  - Toggle **Autoplay** (continuous random playback)
+  - Set a **target profile URI** (accepts `spotify:user:<id>` or a Spotify profile share link)
+  - Save or reset to the default profile (`thesoundsofspotify`)
+- **Right-click any user profile** in Spotify to see the **Play Random** context menu:
+  - **Play a random track** - immediately plays a random song from that user's playlists
+  - **Queue a random track** - silently fetches and adds a random song to your queue
+  - **Set as randomiser profile** - saves that user as the target for autoplay and hotkeys
+
+### Keyboard Shortcuts
+
+| Shortcut  | Action                 |
+| --------- | ---------------------- |
+| `Alt + R` | Play a random song     |
+| `Alt + A` | Toggle autoplay on/off |
+| `Alt + E` | Open settings modal    |
+
+### Autoplay
+
+When autoplay is enabled, the extension pre-fetches a random track and injects it into your queue. When it plays, a toast notification appears and the next track is automatically queued. Skipping songs or manually queuing tracks won't interfere - the random track simply stays in your queue until it's reached.
+
+> **Tip:** For the smoothest experience, avoid rapidly skipping songs while autoplay is on. One random track is always queued up - skipping too fast may briefly play a non-random song before the next one loads.
 
 [![Preview](preview.gif)](https://raw.githubusercontent.com/TechShivvy/spicetify-extensions/main/play-random/preview.gif)
 
 ## Credits
 
 - [Delusoire](https://github.com/Delusoire) for the optimization help!
+- [Hitesh1090](https://github.com/Hitesh1090) for intermidiate development and testing of the extension and autoplay feature!
+- [veryboringhwl](https://github.com/veryboringhwl) for the API migration help!
 
 ## More
 
