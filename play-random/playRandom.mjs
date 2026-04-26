@@ -710,6 +710,76 @@ import random from "https://esm.sh/lodash.random";
             content: configContainer,
           });
         }
+
+        // Context menu on user profiles
+        const ctxPlayRandom = new Spicetify.ContextMenu.Item(
+          "Play a random track",
+          async (uris) => {
+            const userUri = uris[0];
+            await _PlayRandom.doTheThing(userUri);
+          },
+          undefined,
+          "play",
+        );
+
+        const ctxQueueRandom = new Spicetify.ContextMenu.Item(
+          "Queue a random track",
+          async (uris) => {
+            const userUri = uris[0];
+            Spicetify.showNotification(
+              "[Play Random] Fetching a random track to queue...",
+            );
+            const track = await _PlayRandom.fetchRandomTrack(
+              userUri,
+              Spicetify.Player.data?.item?.uri,
+            );
+            if (track) {
+              try {
+                await Spicetify.addToQueue([{ uri: track.uri }]);
+                Spicetify.showNotification(
+                  `[Play Random] Queued: "${track.trackName}" by ${track.artistName}`,
+                );
+              } catch (e) {
+                Spicetify.showNotification(
+                  "[Play Random] Failed to add to queue",
+                  true,
+                );
+              }
+            } else {
+              Spicetify.showNotification(
+                "[Play Random] Couldn't find a playable track from this user",
+                true,
+              );
+            }
+          },
+          undefined,
+          "queue",
+        );
+
+        const ctxSetProfile = new Spicetify.ContextMenu.Item(
+          "Set as randomiser profile",
+          (uris) => {
+            const userUri = uris[0];
+            targetUserUri = userUri;
+            LocalStorage.set("play-random:user-uri", userUri);
+            Spicetify.showNotification(
+              `[Play Random] Profile set to ${userUri.split(":")[2]}`,
+            );
+            if (autoplayEnabled) {
+              prefetchAndQueue(targetUserUri, Spicetify.Player.data?.item?.uri);
+            }
+          },
+          undefined,
+          "artist",
+        );
+
+        new Spicetify.ContextMenu.SubMenu(
+          "Play Random",
+          [ctxPlayRandom, ctxQueueRandom, ctxSetProfile],
+          (uris) => Spicetify.URI.isProfile(uris[0]),
+          false,
+          "shuffle",
+        ).register();
       }
     };
 
